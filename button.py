@@ -11,7 +11,7 @@ class Button():
     def draw(self, screen, x, y, scale = None):
         #get dimentions
         if scale is not None:
-            self.img = pygame.transform.scale(self.img, (int(x) * int(scale), int(y) * int(scale)))
+            self.img = pygame.transform.scale(self.img, (int(x) * float(scale), int(y) * float(scale)))
         #create button area 
         self.rect = self.img.get_rect()
         #top left of the button area at x,y coordinates
