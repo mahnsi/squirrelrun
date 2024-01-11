@@ -34,11 +34,11 @@ world_data =[
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
-[0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
+[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 3, 3, 0, 0, 0, 0],
 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
 ]
 
@@ -80,18 +80,20 @@ def play():
         #draw the map weve created onto the screen
         world.draw(screen)
         player.draw(screen)
-
+        
         for tile in world.tile_list:
             if tile[1].colliderect(player.rect):
                 if world.isDeadly(tile):
                     gameOver()
+                if tile[0] is world.image_four:
+                    win()
                 if player.y_vel < 0:
                     print("collided from under")
                     player.rect.y = tile[1].bottom
                     player.y_vel = 0
 
                 elif player.y_vel >= 0:
-                    print(player.rect.right, tile[1].left)
+                    #print(player.rect.right, tile[1].left)
                     if ((player.rect.right - tile[1].left) == 5):
                         print("collided from left")
                         player.rect.x = tile[1].left - player.rect.width
@@ -128,18 +130,13 @@ def level_select():
             running = play()
         pygame.display.flip()
 
+
 def gameOver():
     print("lost")
-    running = True
-    while running:
-         screen.blit(bg, (0,0))
-
-         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                pygame.quit()
-                sys.exit()
-
-    pygame.display.flip()
+    player.rect.x = 0
+    player.rect.y = 560
         
+def win():
+    print("win")
+
 main_menu()

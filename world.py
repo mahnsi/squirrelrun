@@ -8,6 +8,7 @@ class World():
         image_one = pygame.image.load('assets/dirt.png')
         image_two = pygame.image.load('assets/grass.png')
         self.image_three = pygame.transform.scale(pygame.image.load('assets/lava.png'), (tile_size, tile_size))
+        self.image_four = pygame.transform.scale(pygame.image.load('assets/portal.png'), (tile_size, tile_size))
         # y coord of each tile being placed increases as we move down
         rcount = 0
         for row in data:
@@ -28,6 +29,9 @@ class World():
 
                 if tile == 3:
                     image = self.image_three
+                if tile == 4:
+                    image = self.image_four
+                    
                 img_rect = image.get_rect()
                 img_rect.x = ccount*tile_size
                 img_rect.y = rcount*tile_size 
