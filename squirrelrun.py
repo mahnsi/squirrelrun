@@ -1,8 +1,9 @@
 import pygame, sys
-import button, world, player
+import button, world, player, worlddata
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 FPS = 60
+numlevels = 2
 #16 tiles by 9 tiles. each tile 80 px sq
 #python3 squirrelrun.py
 
@@ -22,28 +23,19 @@ back_button_image = pygame.image.load('assets/backbutton.png')
 start_button = button.Button(256, 64, start_button_image)
 quit_button = button.Button(256, 64, quit_button_image)
 back_button = button.Button(75, 75, back_button_image)
-level_button = button.Button(80, 80, back_button_image)
+
+level_image_list = []
+for i in range (1, numlevels+1):
+    path = f'assets/L{i}.png'
+    level_image_list.append(pygame.image.load(path))
 
 #load player images ---> 150,150 are the dimentions
 player_image = pygame.transform.scale(pygame.image.load('assets/lava.png'), (150,150))
 player_jumping = pygame.transform.scale(pygame.image.load('assets/lava.png'), (150,150))
 player_list = [player_image, player_jumping]
 
-
-world_data =[
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 3, 3, 0, 0, 0, 0],
-[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-]
-
-world = world.World(world_data)
-player = player.Player(player_list, 0, 560)
+world_data = worlddata.l1
+plyr = player.Player(player_list, 0, 560)
 
 def main_menu():
     running = True
@@ -66,75 +58,88 @@ def main_menu():
 
         pygame.display.flip()
 
-def play():
+def play(data):
+
+    wrld = world.World(data)
     clock = pygame.time.Clock()
     running = True
     while running:
         clock.tick(FPS)
         screen.blit(bg, (0,0))
+        back_button.draw(screen, 50, 50)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        
-        #draw the map weve created onto the screen
-        world.draw(screen)
-        player.draw(screen)
-        
-        for tile in world.tile_list:
-            if tile[1].colliderect(player.rect):
-                if world.isDeadly(tile):
-                    gameOver()
-                if tile[0] is world.image_four:
-                    win()
-                if player.y_vel < 0:
-                    print("collided from under")
-                    player.rect.y = tile[1].bottom
-                    player.y_vel = 0
 
-                elif player.y_vel >= 0:
-                    #print(player.rect.right, tile[1].left)
-                    if ((player.rect.right - tile[1].left) == 5):
-                        print("collided from left")
-                        player.rect.x = tile[1].left - player.rect.width
-                    
-                    elif((player.rect.left - tile[1].right) == -5):
-                        print("collided from right")
-                        player.rect.x = tile[1].right
-
-                    else:
-                        print("collided from top")
-                        player.rect.y = tile[1].top - player.rect.height
-                        player.y_vel = 0
-
-
-        player.update()
-        pygame.display.flip()
-
-def level_select():
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-        
-        screen.fill((156, 107, 81))
-        back_button.draw(screen, 50, 50)
-        level_button.draw(screen, 150, 150)
         if back_button.isClicked():
             print("back clicked")
             return True
         
-        if level_button.isClicked():
-            print("level selected")
-            running = play()
+        #draw the map weve created onto the screen
+        wrld.draw(screen)
+        plyr.draw(screen)
+        
+        for tile in wrld.tile_list:
+            if tile[1].colliderect(plyr.rect):
+                if wrld.isDeadly(tile):
+                    gameOver()
+                if tile[0] is wrld.image_four:
+                    win()
+                if plyr.y_vel < 0:
+                    plyr.rect.y = tile[1].bottom
+                    plyr.y_vel = 0
+
+                elif plyr.y_vel >= 0:
+                    #print(player.rect.right, tile[1].left)
+                    if ((plyr.rect.right - tile[1].left) == 5):
+                        plyr.rect.x = tile[1].left - plyr.rect.width
+                    
+                    elif((plyr.rect.left - tile[1].right) == -5):
+                        plyr.rect.x = tile[1].right
+
+                    else:
+                        plyr.rect.y = tile[1].top - plyr.rect.height
+                        plyr.y_vel = 0
+
+
+        plyr.update()
+        pygame.display.flip()
+
+def level_select():
+    j=0
+    button_list = []
+    screen.fill((156, 107, 81))
+    back_button.draw(screen, 50, 50)
+    running = True
+
+    for i in range (0, numlevels):
+        button_list.append(button.Button(80, 80, level_image_list[i]))
+        button_list[i].draw(screen, 150 + j, 150)
+        j+=100
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+        if back_button.isClicked():
+            print("back clicked")
+            return True
+        
+        for i in range(0, numlevels):
+            if button_list[i].isClicked():
+                print("level " + str(i+1) + " selected")
+                #change world data based on i
+                world_data=worlddata.data_list[i]
+                running = play(world_data)
+
         pygame.display.flip()
 
 
 def gameOver():
     print("lost")
-    player.rect.x = 0
-    player.rect.y = 560
+    plyr.rect.x = 0
+    plyr.rect.y = 560
         
 def win():
     print("win")
