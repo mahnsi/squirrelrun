@@ -3,7 +3,7 @@ import button, world, player, worlddata
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 FPS = 60
-numlevels = 2
+numlevels = 3
 #16 tiles by 9 tiles. each tile 80 px sq
 #python3 squirrelrun.py
 
@@ -26,12 +26,12 @@ back_button = button.Button(75, 75, back_button_image)
 
 level_image_list = []
 for i in range (1, numlevels+1):
-    path = f'assets/L{i}.png'
+    path = f'assets/Lpics/L{i}.png'
     level_image_list.append(pygame.image.load(path))
 
-#load player images ---> 150,150 are the dimentions
-player_image = pygame.transform.scale(pygame.image.load('assets/lava.png'), (150,150))
-player_jumping = pygame.transform.scale(pygame.image.load('assets/lava.png'), (150,150))
+#load player imagess ---> 150,150 are the dimentions
+player_image = pygame.transform.scale(pygame.image.load('assets/squirrelmain.png'), (150,150))
+player_jumping = pygame.transform.scale(pygame.image.load('assets/squirreljump.png'), (150,150))
 player_list = [player_image, player_jumping]
 
 world_data = worlddata.l1

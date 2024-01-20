@@ -28,7 +28,7 @@ class Player():
             #pygame.transform.flip(self.img, True, False)
             x+=5
 
-        if (key[pygame.K_SPACE] or key[pygame.K_UP]) and not self.jumping:
+        if (key[pygame.K_SPACE] or key[pygame.K_UP] and not self.jumping):
             #when jump, change the velocity to act against gravity. i.e., move in the opposite direction
             #this moves the players position up
             self.y_vel = -v0
