@@ -19,14 +19,11 @@ class World():
                 #maybe change below into a for loop and put the tile images in a list
                 if tile == 0:
                     ccount+=1
-                    continue
-                
+                    continue            
                 if tile == 1:
                     image = pygame.transform.scale(image_one, (tile_size, tile_size))
-
                 if tile == 2:
                     image = pygame.transform.scale(image_two, (tile_size, tile_size))
-
                 if tile == 3:
                     image = self.image_three
                 if tile == 4:

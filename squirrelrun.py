@@ -4,6 +4,7 @@ pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 FPS = 60
 numlevels = 3
+level=1
 #16 tiles by 9 tiles. each tile 80 px sq
 #python3 squirrelrun.py
 
@@ -30,12 +31,12 @@ for i in range (1, numlevels+1):
     level_image_list.append(pygame.image.load(path))
 
 #load player imagess ---> 150,150 are the dimentions
-player_image = pygame.transform.scale(pygame.image.load('assets/squirrelmain.png'), (150,150))
-player_jumping = pygame.transform.scale(pygame.image.load('assets/squirreljump.png'), (150,150))
+player_image = pygame.transform.scale(pygame.image.load('assets/squirrelmain.png'), (120,120))
+player_jumping = pygame.transform.scale(pygame.image.load('assets/squirreljump.png'), (120,120))
 player_list = [player_image, player_jumping]
 
 world_data = worlddata.l1
-plyr = player.Player(player_list, 0, 560)
+plyr = player.Player(player_list, 100, 400)
 
 def main_menu():
     running = True
@@ -45,6 +46,8 @@ def main_menu():
                 running = False
 
         screen.blit(bg, (0,0))
+        screen.blit(pygame.transform.scale(pygame.image.load('assets/title_text.png'), (900, 120)), (190, 150))
+
         cursor_pos = pygame.mouse.get_pos()
         start_button.draw(screen, 250, 500)
         quit_button.draw(screen, 750, 500)
@@ -79,43 +82,21 @@ def play(data):
         #draw the map weve created onto the screen
         wrld.draw(screen)
         plyr.draw(screen)
-        
-        for tile in wrld.tile_list:
-            if tile[1].colliderect(plyr.rect):
-                if wrld.isDeadly(tile):
-                    gameOver()
-                if tile[0] is wrld.image_four:
-                    win()
-                if plyr.y_vel < 0:
-                    plyr.rect.y = tile[1].bottom
-                    plyr.y_vel = 0
+        plyr.update(wrld)
 
-                elif plyr.y_vel >= 0:
-                    #print(player.rect.right, tile[1].left)
-                    if ((plyr.rect.right - tile[1].left) == 5):
-                        plyr.rect.x = tile[1].left - plyr.rect.width
-                    
-                    elif((plyr.rect.left - tile[1].right) == -5):
-                        plyr.rect.x = tile[1].right
-
-                    else:
-                        plyr.rect.y = tile[1].top - plyr.rect.height
-                        plyr.y_vel = 0
-
-
-        plyr.update()
         pygame.display.flip()
 
 def level_select():
     j=0
     button_list = []
-    screen.fill((156, 107, 81))
+    screen.fill((164, 237, 171))
     back_button.draw(screen, 50, 50)
     running = True
 
+    screen.blit(pygame.transform.scale(pygame.image.load('assets/lvl_select_text.png'), (400, 160)), (440, 50))
     for i in range (0, numlevels):
         button_list.append(button.Button(80, 80, level_image_list[i]))
-        button_list[i].draw(screen, 150 + j, 150)
+        button_list[i].draw(screen, 150 + j, 210)
         j+=100
 
     while running:
@@ -131,6 +112,7 @@ def level_select():
                 print("level " + str(i+1) + " selected")
                 #change world data based on i
                 world_data=worlddata.data_list[i]
+                level = i
                 running = play(world_data)
 
         pygame.display.flip()
@@ -143,5 +125,7 @@ def gameOver():
         
 def win():
     print("win")
+    world_data=worlddata.data_list[level+1]
+    #play(world_data)
 
 main_menu()

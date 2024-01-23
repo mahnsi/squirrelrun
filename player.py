@@ -8,59 +8,82 @@ class Player():
         #set place of player on grid
         self.rect.x = x
         self.rect.y = y
+        self.gravity = 1
         self.y_vel = 0
         self.jumping = False
         self.isCollided = False
+        self.dx = 0
+        self.dy = 0
 
-    def draw(self, screen):
-        screen.blit(self.img, self.rect)
+    def draw(self, screen, pos = None):
+        if pos is not None:
+            screen.blit(self.img, (pos[0], pos[1]))
+        else:
+            screen.blit(self.img, self.rect)
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
-    def update(self):
-        x=0
-        y=0
+    def update(self, wrld):
+        self.dx=0
+        self.dy = 0
         v0 = 15
 
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
-            x-=5
+            self.dx-=5
 
         if key[pygame.K_RIGHT]:
             #pygame.transform.flip(self.img, True, False)
-            x+=5
+            self.dx+=5
 
-        if (key[pygame.K_SPACE] or key[pygame.K_UP] and not self.jumping):
-            #when jump, change the velocity to act against gravity. i.e., move in the opposite direction
-            #this moves the players position up
+        if ((key[pygame.K_SPACE] or key[pygame.K_UP]) and not self.jumping):
             self.y_vel = -v0
             self.jumping = True
             self.img = self.img_list[1]
-        
-        else:
+            print("jump")
+
+        if(key[pygame.K_SPACE] == False):
             self.jumping = False
-            if self.y_vel == 0:
-                self.img = self.img_list[0]
-              
-        #gravity; keep increasing the y velocity (accelerate downwards), until it reaches max vel (if it gets to more than v0, 
-        #then our jumping will not move the player in the upwards direction unless we rapidly click jump)
-        self.y_vel += 1
-        if self.y_vel > v0:
-            self.y_vel = v0
+            self.img = self.img_list[0]
+
+        #gravity
+        self.y_vel += self.gravity
+        #limit on the speed of gravity (terminal velocity)
+        if self.y_vel > 10:
+                self.y_vel = 10
+
+        #always acting
+        self.dy += self.y_vel
+
+        for tile in wrld.tile_list:
+            if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, 120, 120):
+                self.dx = 0
+
+            #if player is about to collide with a tile
+            if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, 120, 120): 
+                if wrld.isDeadly(tile):
+                    print("lose")
+                    self.rect.x = 0
+                    self.rect.y = 560
+
+                if tile[0] is wrld.image_four: #image four is the portal
+                    print("win")
+                    #win()
+
+                #collide from below block
+                if self.y_vel < 0:
+                    self.dy = tile[1].bottom - self.rect.top
+                    self.y_vel = 0
+
+                #still or falling
+                elif self.y_vel >= 0: #still or falling
+                    print("falling collide")
+                    print(tile[1].top, self.rect.bottom, " ")
+                    self.dy = tile[1].top - self.rect.bottom
+                    print(self.dy)
+                    self.y_vel = 0
+
+        self.rect.x += self.dx
+        self.rect.y += self.dy
         
-        #every tick, the players y position increases by the velocity (constant motion)
-        y += self.y_vel
-
-        #check for collisions
-
-        #update player
-        self.rect.x += x
-        self.rect.y += y
-
-        if self.rect.bottom > 640:
-            self.rect.bottom = 640
-            y=0
-
-        if self.rect.top < 0:
-            self.rect.top = 0
-
     def animate(self):
         walking_list = []
