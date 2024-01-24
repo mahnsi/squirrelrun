@@ -23,6 +23,7 @@ bg_g = pygame.transform.scale(pygame.image.load('assets/background.png'), (1280,
 start_button_image= pygame.image.load('assets/startbutton.png')
 quit_button_image= pygame.image.load('assets/quitbutton.png')
 back_button_image = pygame.image.load('assets/backbutton.png')
+presstostart_image = pygame.transform.scale(pygame.image.load('assets/presstostart.png'),(300, 120))
 start_button = button.Button(256, 64, start_button_image)
 quit_button = button.Button(256, 64, quit_button_image)
 back_button = button.Button(75, 75, back_button_image)
@@ -73,8 +74,10 @@ def play(data):
     start = False
     while running:
         clock.tick(FPS)
-        screen.blit(bg_g, (0,0))
+        screen.blit(bg_g, (0,0))  
         back_button.draw(screen, 50, 50)
+        if not start:
+            screen.blit(presstostart_image, (40, 300))    
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
