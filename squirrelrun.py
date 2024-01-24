@@ -4,7 +4,7 @@ pygame.init()
 
 screen = pygame.display.set_mode((1280, 720))
 FPS = 60
-numlevels = 3
+numlevels = 4
 level=1
 #16 tiles by 9 tiles. each tile 80 px sq
 
@@ -87,7 +87,7 @@ def play(data):
         #draw the map weve created onto the screen
         wrld.draw(screen)
         plyr.draw(screen)
-        
+
         key = pygame.key.get_pressed()
         if(key[pygame.K_RETURN]):
             print("game start")
@@ -100,27 +100,28 @@ def play(data):
         pygame.display.flip()
 
 def level_select():
-    j=0
     button_list = []
     screen.fill((164, 237, 171))
     back_button.draw(screen, 50, 50)
     running = True
 
-    screen.blit(pygame.transform.scale(pygame.image.load('assets/lvl_select_text.png'), (400, 160)), (440, 50))
     for i in range (0, numlevels):
         button_list.append(button.Button(80, 80, level_image_list[i]))
-        button_list[i].draw(screen, 150 + j, 210)
-        j+=100
 
     while running:
+        j=0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
         if back_button.isClicked():
             print("back clicked")
             return True
-        
+            
+        screen.blit(pygame.transform.scale(pygame.image.load('assets/lvl_select_text.png'), (400, 160)), (440, 50))
+
         for i in range(0, numlevels):
+            button_list[i].draw(screen, 150 + j, 210)
+            j+=100
             if button_list[i].isClicked():
                 print("level " + str(i+1) + " selected")
                 #change world data based on i

@@ -6,6 +6,8 @@ mixer.init()
 #load sounds
 jump_sound = pygame.mixer.Sound('assets/sounds/jump.wav')
 gameover_sound = pygame.mixer.Sound('assets/sounds/gameover.wav')
+win_sound = pygame.mixer.Sound('assets/sounds/win.wav')
+win_sound.set_volume(0.2)
 
 class Player():
     def __init__(self, img_list, x, y):
@@ -66,6 +68,10 @@ class Player():
         for tile in wrld.tile_list:
             if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
                 self.dx = 0
+                if tile[0] is wrld.image_four: #image four is the portal
+                    win_sound.play()
+                    print("win")
+                    #win()
 
             #if player is about to collide with a tile
             if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, self.rect.width, self.rect.height): 
@@ -83,9 +89,6 @@ class Player():
                         pygame.display.flip()
                         pygame.time.delay(300)
                     '''
-                if tile[0] is wrld.image_four: #image four is the portal
-                    print("win")
-                    #win()
 
                 #collide from below block
                 if self.y_vel < 0:

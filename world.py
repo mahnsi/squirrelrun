@@ -9,7 +9,7 @@ class World():
         image_one = pygame.image.load('assets/dirt.png')
         image_two = pygame.image.load('assets/grass.png')
         self.image_three = pygame.transform.scale(pygame.image.load('assets/lava.png'), (tile_size, tile_size))
-        self.image_four = pygame.transform.scale(pygame.image.load('assets/portal.png'), (tile_size, tile_size))
+        self.image_four = pygame.transform.scale(pygame.image.load('assets/portal.png'), (tile_size, tile_size*1.5))
         #for maps with enemies
         self.owl_group = pygame.sprite.Group()
         # y coord of each tile being placed increases as we move down
@@ -39,8 +39,10 @@ class World():
                     continue
                     
                 img_rect = image.get_rect()
+            
                 img_rect.x = ccount*tile_size
-                img_rect.y = rcount*tile_size 
+                img_rect.bottom = (rcount + 1)*tile_size 
+
                 #store this new created tile in the list
                 tile_tuple = (image, img_rect)
                 self.tile_list.append(tile_tuple)
