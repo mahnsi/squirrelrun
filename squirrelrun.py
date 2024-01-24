@@ -1,12 +1,12 @@
-import pygame, sys
+import pygame
 import button, world, player, worlddata
 pygame.init()
+
 screen = pygame.display.set_mode((1280, 720))
 FPS = 60
 numlevels = 3
 level=1
 #16 tiles by 9 tiles. each tile 80 px sq
-#python3 squirrelrun.py
 
 #set Title and icon
 pygame.display.set_caption("Squirrel Run")
@@ -16,6 +16,8 @@ pygame.display.set_icon(icon)
 # load and scale background
 bg = pygame.image.load('assets/background.png')
 bg = pygame.transform.scale(bg, (1280, 720))
+bg_g = pygame.transform.scale(pygame.image.load('assets/background.png'), (1280, 720))
+
 
 # load button images and buttons - start, quit, back, lvl
 start_button_image= pygame.image.load('assets/startbutton.png')
@@ -31,12 +33,13 @@ for i in range (1, numlevels+1):
     level_image_list.append(pygame.image.load(path))
 
 #load player imagess ---> 150,150 are the dimentions
-player_image = pygame.transform.scale(pygame.image.load('assets/squirrelmain.png'), (120,120))
-player_jumping = pygame.transform.scale(pygame.image.load('assets/squirreljump.png'), (120,120))
-player_list = [player_image, player_jumping]
+player_image = pygame.transform.scale(pygame.image.load('assets/squirrelmain.png'), (104,117))
+player_jumping = pygame.transform.scale(pygame.image.load('assets/squirreljump.png'), (104,117))
+player_reverse = pygame.transform.scale(pygame.image.load('assets/squirrelmain_reverse.png'), (104,117))
+player_list = [player_image, player_jumping, player_reverse]
 
 world_data = worlddata.l1
-plyr = player.Player(player_list, 100, 400)
+plyr = player.Player(player_list, 10, 490)
 
 def main_menu():
     running = True
@@ -65,10 +68,12 @@ def play(data):
 
     wrld = world.World(data)
     clock = pygame.time.Clock()
+
     running = True
+    start = False
     while running:
         clock.tick(FPS)
-        screen.blit(bg, (0,0))
+        screen.blit(bg_g, (0,0))
         back_button.draw(screen, 50, 50)
 
         for event in pygame.event.get():
@@ -82,7 +87,15 @@ def play(data):
         #draw the map weve created onto the screen
         wrld.draw(screen)
         plyr.draw(screen)
-        plyr.update(wrld)
+        
+        key = pygame.key.get_pressed()
+        if(key[pygame.K_RETURN]):
+            print("game start")
+            start = True
+
+        if start:
+            plyr.update(wrld)
+        
 
         pygame.display.flip()
 

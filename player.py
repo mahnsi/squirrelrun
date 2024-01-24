@@ -1,4 +1,11 @@
 import pygame
+from pygame import mixer
+pygame.mixer.pre_init(44100, -16, 2, 512)
+mixer.init()
+
+#load sounds
+jump_sound = pygame.mixer.Sound('assets/sounds/jump.wav')
+gameover_sound = pygame.mixer.Sound('assets/sounds/gameover.wav')
 
 class Player():
     def __init__(self, img_list, x, y):
@@ -20,7 +27,7 @@ class Player():
             screen.blit(self.img, (pos[0], pos[1]))
         else:
             screen.blit(self.img, self.rect)
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        #pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
 
     def update(self, wrld):
         self.dx=0
@@ -30,18 +37,20 @@ class Player():
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
             self.dx-=5
+            self.img = self.img_list[2]
 
         if key[pygame.K_RIGHT]:
             #pygame.transform.flip(self.img, True, False)
             self.dx+=5
 
         if ((key[pygame.K_SPACE] or key[pygame.K_UP]) and not self.jumping):
-            self.y_vel = -v0
+            jump_sound.play()
+            self.y_vel = -19
             self.jumping = True
             self.img = self.img_list[1]
             print("jump")
 
-        if(key[pygame.K_SPACE] == False):
+        if((key[pygame.K_SPACE] == False) and (key[pygame.K_UP]==False)):
             self.jumping = False
             self.img = self.img_list[0]
 
@@ -55,16 +64,25 @@ class Player():
         self.dy += self.y_vel
 
         for tile in wrld.tile_list:
-            if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, 120, 120):
+            if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
                 self.dx = 0
 
             #if player is about to collide with a tile
-            if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, 120, 120): 
+            if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, self.rect.width, self.rect.height): 
                 if wrld.isDeadly(tile):
+                    gameover_sound.play()
                     print("lose")
-                    self.rect.x = 0
                     self.rect.y = 560
-
+                    self.rect.x = 0
+                    '''
+                    for i in range (0,5):
+                        if (i%2 == 0):
+                            self.rect.x = 0
+                        elif(i%2 == 1):
+                            self.rect.x = -60
+                        pygame.display.flip()
+                        pygame.time.delay(300)
+                    '''
                 if tile[0] is wrld.image_four: #image four is the portal
                     print("win")
                     #win()
@@ -76,11 +94,14 @@ class Player():
 
                 #still or falling
                 elif self.y_vel >= 0: #still or falling
-                    print("falling collide")
-                    print(tile[1].top, self.rect.bottom, " ")
                     self.dy = tile[1].top - self.rect.bottom
-                    print(self.dy)
                     self.y_vel = 0
+
+        if (self.rect.x<0):
+            self.rect.x = 0
+
+        if(self.rect.right>1280):
+            self.rect.right = 1280
 
         self.rect.x += self.dx
         self.rect.y += self.dy

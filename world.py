@@ -1,6 +1,7 @@
-import pygame
+import pygame, enemy
 
 tile_size = 80
+
 class World():
     def __init__(self, data):
         ##list of image and rect (with coordinates) tuples
@@ -9,6 +10,8 @@ class World():
         image_two = pygame.image.load('assets/grass.png')
         self.image_three = pygame.transform.scale(pygame.image.load('assets/lava.png'), (tile_size, tile_size))
         self.image_four = pygame.transform.scale(pygame.image.load('assets/portal.png'), (tile_size, tile_size))
+        #for maps with enemies
+        self.owl_group = pygame.sprite.Group()
         # y coord of each tile being placed increases as we move down
         rcount = 0
         for row in data:
@@ -28,6 +31,12 @@ class World():
                     image = self.image_three
                 if tile == 4:
                     image = self.image_four
+                if tile == 5:
+                    #image = self.image_five
+                    owl = enemy.Enemy(ccount*tile_size, rcount*tile_size)
+                    self.owl_group.add(owl)
+                    ccount+=1
+                    continue
                     
                 img_rect = image.get_rect()
                 img_rect.x = ccount*tile_size
@@ -43,10 +52,13 @@ class World():
         for tile_tuple in self.tile_list:
             #display the tile onto the screen based on the stored image, and coordinates 
             screen.blit(tile_tuple[0], tile_tuple[1])
+        self.owl_group.draw(screen)
+        self.owl_group.update()
 
     #takes in a tile tuple, checks if its deadly
     def isDeadly(self, tile):
         if tile[0] is self.image_three:
             print("collided with lava")
             return True
+        
         return False
