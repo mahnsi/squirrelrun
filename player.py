@@ -65,6 +65,7 @@ class Player():
         #always acting
         self.dy += self.y_vel
 
+        #tile collision
         for tile in wrld.tile_list:
             if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
                 self.dx = 0
@@ -105,6 +106,14 @@ class Player():
 
         if(self.rect.right>1280):
             self.rect.right = 1280
+
+        #collision with enemies
+        if pygame.sprite.spritecollide(self, wrld.owl_group, False):
+            gameover_sound.play()
+            print("lose")
+            self.rect.y = 560
+            self.rect.x = 0
+
 
         self.rect.x += self.dx
         self.rect.y += self.dy

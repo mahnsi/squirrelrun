@@ -1,10 +1,10 @@
 import pygame
-import button, world, player, worlddata
+import button, world, player, worlddata, math
 pygame.init()
 
 screen = pygame.display.set_mode((1280, 720))
 FPS = 60
-numlevels = 4
+numlevels = 5
 level=1
 #16 tiles by 9 tiles. each tile 80 px sq
 
@@ -40,7 +40,7 @@ player_reverse = pygame.transform.scale(pygame.image.load('assets/squirrelmain_r
 player_list = [player_image, player_jumping, player_reverse]
 
 world_data = worlddata.l1
-plyr = player.Player(player_list, 10, 490)
+
 
 def main_menu():
     running = True
@@ -66,26 +66,34 @@ def main_menu():
         pygame.display.flip()
 
 def play(data):
-
+    #create world and player based on level data
     wrld = world.World(data)
+    plyr = player.Player(player_list, 10, 490)
+    #scale image proportional to tile size
+    plyr.img = pygame.transform.scale(plyr.img, (math.floor(wrld.tile_size*1.3), math.floor(wrld.tile_size*1.4625)))
+    plyr.rect = plyr.img.get_rect()
+    
     clock = pygame.time.Clock()
 
     running = True
     start = False
     while running:
+        plyr.img = pygame.transform.scale(plyr.img, (math.floor(wrld.tile_size*1.3), math.floor(wrld.tile_size*1.4625)))
         clock.tick(FPS)
         screen.blit(bg_g, (0,0))  
         back_button.draw(screen, 50, 50)
-        if not start:
-            screen.blit(presstostart_image, (40, 300))    
-
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
         if back_button.isClicked():
             print("back clicked")
+            start = True
             return True
+        
+        if not start:
+            screen.blit(presstostart_image, (40, 300)) 
         
         #draw the map weve created onto the screen
         wrld.draw(screen)
@@ -99,7 +107,6 @@ def play(data):
         if start:
             plyr.update(wrld)
         
-
         pygame.display.flip()
 
 def level_select():
