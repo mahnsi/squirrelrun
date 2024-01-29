@@ -13,6 +13,7 @@ class World():
         #for maps with enemies
         self.owl_group = pygame.sprite.Group()
         self.portal_group = pygame.sprite.Group()
+        self.movingplatform_group = pygame.sprite.Group()
         # y coord of each tile being placed increases as we move down
         rcount = 0
         for row in data:
@@ -41,6 +42,12 @@ class World():
                     self.owl_group.add(owl)
                     ccount+=1
                     continue
+                if tile == 6:
+                    movingplatform = MovingPlatform(ccount*self.tile_size, (rcount*self.tile_size), self.tile_size)
+                    self.movingplatform_group.add(movingplatform)
+                    ccount+=1
+                    continue
+
                     
                 img_rect = image.get_rect()
             
@@ -60,7 +67,11 @@ class World():
             screen.blit(tile_tuple[0], tile_tuple[1])
         self.owl_group.draw(screen)
         self.owl_group.update()
+
         self.portal_group.draw(screen)
+
+        self.movingplatform_group.draw(screen)
+        self.movingplatform_group.update()
 
     #takes in a tile tuple, checks if its deadly
     def isDeadly(self, tile):
@@ -77,3 +88,20 @@ class Portal(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+class MovingPlatform(pygame.sprite.Sprite):
+    def __init__(self, x, y, tile_size):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load('assets/grass.png'), (tile_size, tile_size))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.move_direction = 1
+        self.move_counter = 0
+
+    def update(self):
+        self.rect.x += self.move_direction
+        self.move_counter +=1 
+        if abs(self.move_counter) > 60:
+            self.move_direction *= -1
+            self.move_counter *= -1

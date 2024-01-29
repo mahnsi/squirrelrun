@@ -103,6 +103,9 @@ class Player():
 
         if(self.rect.right>1280):
             self.rect.right = 1280
+        
+        if(self.rect.top<0):
+            self.rect.top = 0
 
         #collision with enemies
         if pygame.sprite.spritecollide(self, wrld.owl_group, False):
@@ -116,10 +119,27 @@ class Player():
             win_sound.play()
             print("win")
             return 1
+        
+        #collision with moving platform
+        #make a bigger list with playform tiles and static tiles and share this code
+        for tile in wrld.movingplatform_group:
+            if tile.rect.colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
+                self.dx = 0
+
+            #if player is about to collide with a tile
+            if tile.rect.colliderect(self.rect.x, self.rect.y + self.dy, self.rect.width, self.rect.height): 
+
+                #collide from below block
+                if self.y_vel < 0:
+                    self.dy = tile.rect.bottom - self.rect.top
+                    self.y_vel = 0
+
+                #still or falling
+                elif self.y_vel >= 0: #still or falling
+                    self.dy = tile.rect.top - self.rect.bottom
+                    self.y_vel = 0
+
 
 
         self.rect.x += self.dx
         self.rect.y += self.dy
-        
-    def animate(self):
-        walking_list = []
