@@ -1,4 +1,4 @@
-import pygame, enemy
+import pygame
 
 class World():
 
