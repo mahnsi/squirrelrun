@@ -111,13 +111,15 @@ def play(data, level):
         if start:
             if(plyr.update(wrld)==1):
                 level+=1
-                plyr.rect.x=0
-                plyr.rect.y=560
+                plyr.rect.y=720-(wrld.tile_size)
+                #if the next level exists, move on to it
                 if len(worlddata.data_list)>level:
                     world_data = worlddata.data_list[level]
                 else:
                     running = end()
                 wrld = world.World(world_data)
+                plyr.img = pygame.transform.scale(plyr.img, (math.floor(wrld.tile_size*1.3), math.floor(wrld.tile_size*1.4625)))
+                plyr.rect = plyr.img.get_rect()
                 
         
         pygame.display.flip()

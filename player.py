@@ -67,35 +67,21 @@ class Player():
         self.dy += self.y_vel
 
         #tile collision
-        for tile in wrld.tile_list:
-            if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
+        for tile in wrld.collidables:
+            #if player wants to move in x direction but there is a collidable: 
+            if tile.colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
                 self.dx = 0
 
             #if player is about to collide with a tile
-            if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, self.rect.width, self.rect.height): 
-                if wrld.isDeadly(tile):
-                    gameover_sound.play()
-                    print("lose")
-                    self.rect.y = 560
-                    self.rect.x = 0
-                    '''
-                    for i in range (0,5):
-                        if (i%2 == 0):
-                            self.rect.x = 0
-                        elif(i%2 == 1):
-                            self.rect.x = -60
-                        pygame.display.flip()
-                        pygame.time.delay(300)
-                    '''
-
+            if tile.colliderect(self.rect.x, self.rect.y + self.dy, self.rect.width, self.rect.height): 
                 #collide from below block
                 if self.y_vel < 0:
-                    self.dy = tile[1].bottom - self.rect.top
+                    self.dy = tile.bottom - self.rect.top
                     self.y_vel = 0
 
                 #still or falling
                 elif self.y_vel >= 0: #still or falling
-                    self.dy = tile[1].top - self.rect.bottom
+                    self.dy = tile.top - self.rect.bottom
                     self.y_vel = 0
 
         if (self.rect.x<0):
@@ -108,7 +94,7 @@ class Player():
             self.rect.top = 0
 
         #collision with enemies
-        if pygame.sprite.spritecollide(self, wrld.owl_group, False):
+        if (pygame.sprite.spritecollide(self, wrld.owl_group, False)) or pygame.sprite.spritecollide(self, wrld.hazard_group, False):
             gameover_sound.play()
             print("lose")
             self.rect.y = 560
@@ -116,30 +102,10 @@ class Player():
 
         #collision with winnig portal
         if pygame.sprite.spritecollide(self, wrld.portal_group, False):
+            self.dy=0
             win_sound.play()
             print("win")
             return 1
         
-        #collision with moving platform
-        #make a bigger list with playform tiles and static tiles and share this code
-        for tile in wrld.movingplatform_group:
-            if tile.rect.colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
-                self.dx = 0
-
-            #if player is about to collide with a tile
-            if tile.rect.colliderect(self.rect.x, self.rect.y + self.dy, self.rect.width, self.rect.height): 
-
-                #collide from below block
-                if self.y_vel < 0:
-                    self.dy = tile.rect.bottom - self.rect.top
-                    self.y_vel = 0
-
-                #still or falling
-                elif self.y_vel >= 0: #still or falling
-                    self.dy = tile.rect.top - self.rect.bottom
-                    self.y_vel = 0
-
-
-
         self.rect.x += self.dx
         self.rect.y += self.dy
