@@ -12,6 +12,7 @@ win_sound.set_volume(0.2)
 class Player():
     def __init__(self, img_list, x, y):
         self.img_list = img_list
+        self.level = 1
         self.img = img_list[0]
         self.rect = self.img.get_rect()
         #set place of player on grid
@@ -69,10 +70,6 @@ class Player():
         for tile in wrld.tile_list:
             if tile[1].colliderect(self.rect.x + self.dx, self.rect.y, self.rect.width, self.rect.height):
                 self.dx = 0
-                if tile[0] is wrld.image_four: #image four is the portal
-                    win_sound.play()
-                    print("win")
-                    #win()
 
             #if player is about to collide with a tile
             if tile[1].colliderect(self.rect.x, self.rect.y + self.dy, self.rect.width, self.rect.height): 
@@ -113,6 +110,12 @@ class Player():
             print("lose")
             self.rect.y = 560
             self.rect.x = 0
+
+        #collision with winnig portal
+        if pygame.sprite.spritecollide(self, wrld.portal_group, False):
+            win_sound.play()
+            print("win")
+            return 1
 
 
         self.rect.x += self.dx

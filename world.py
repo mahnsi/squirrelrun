@@ -1,7 +1,7 @@
 import pygame, enemy
 
-
 class World():
+
     def __init__(self, data):
         self.tile_size = 720 / len(data)
         ##list of image and rect (with coordinates) tuples
@@ -9,9 +9,10 @@ class World():
         image_one = pygame.image.load('assets/dirt.png')
         image_two = pygame.image.load('assets/grass.png')
         self.image_three = pygame.transform.scale(pygame.image.load('assets/lava.png'), (self.tile_size, self.tile_size))
-        self.image_four = pygame.transform.scale(pygame.image.load('assets/portal.png'), (self.tile_size, self.tile_size*1.5))
+        #self.image_four = pygame.transform.scale(pygame.image.load('assets/portal.png'), (self.tile_size, self.tile_size*1.5))
         #for maps with enemies
         self.owl_group = pygame.sprite.Group()
+        self.portal_group = pygame.sprite.Group()
         # y coord of each tile being placed increases as we move down
         rcount = 0
         for row in data:
@@ -30,7 +31,10 @@ class World():
                 if tile == 3:
                     image = self.image_three
                 if tile == 4:
-                    image = self.image_four
+                    portal = Portal(ccount*self.tile_size, (rcount*self.tile_size)-(self.tile_size//2))
+                    self.portal_group.add(portal)
+                    ccount+=1
+                    continue
                 if tile == 5:
                     #image = self.image_five
                     owl = enemy.Enemy(ccount*self.tile_size, (rcount*self.tile_size)+20)
@@ -56,6 +60,7 @@ class World():
             screen.blit(tile_tuple[0], tile_tuple[1])
         self.owl_group.draw(screen)
         self.owl_group.update()
+        self.portal_group.draw(screen)
 
     #takes in a tile tuple, checks if its deadly
     def isDeadly(self, tile):
@@ -64,3 +69,11 @@ class World():
             return True
         
         return False
+    
+class Portal(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load('assets/portal.png'), (80, 80*1.5))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y

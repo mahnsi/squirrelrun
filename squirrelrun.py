@@ -5,7 +5,7 @@ pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 FPS = 60
 numlevels = 5
-level=1
+#level=1
 #16 tiles by 9 tiles. each tile 80 px sq
 
 #set Title and icon
@@ -23,10 +23,14 @@ bg_g = pygame.transform.scale(pygame.image.load('assets/background.png'), (1280,
 start_button_image= pygame.image.load('assets/startbutton.png')
 quit_button_image= pygame.image.load('assets/quitbutton.png')
 back_button_image = pygame.image.load('assets/backbutton.png')
+main_menu_button_image = pygame.image.load('assets/mainmenubutton.png')
 presstostart_image = pygame.transform.scale(pygame.image.load('assets/presstostart.png'),(300, 120))
+winner_image = pygame.transform.scale(pygame.image.load('assets/winner.png'),(300, 120))
 start_button = button.Button(256, 64, start_button_image)
 quit_button = button.Button(256, 64, quit_button_image)
+main_menu_button = button.Button(256, 64, main_menu_button_image)
 back_button = button.Button(75, 75, back_button_image)
+
 
 level_image_list = []
 for i in range (1, numlevels+1):
@@ -65,7 +69,7 @@ def main_menu():
 
         pygame.display.flip()
 
-def play(data):
+def play(data, level):
     #create world and player based on level data
     wrld = world.World(data)
     plyr = player.Player(player_list, 10, 490)
@@ -105,7 +109,16 @@ def play(data):
             start = True
 
         if start:
-            plyr.update(wrld)
+            if(plyr.update(wrld)==1):
+                level+=1
+                plyr.rect.x=0
+                plyr.rect.y=560
+                if len(worlddata.data_list)>level:
+                    world_data = worlddata.data_list[level]
+                else:
+                    running = end()
+                wrld = world.World(world_data)
+                
         
         pygame.display.flip()
 
@@ -136,20 +149,28 @@ def level_select():
                 print("level " + str(i+1) + " selected")
                 #change world data based on i
                 world_data=worlddata.data_list[i]
-                level = i
-                running = play(world_data)
+                running = play(world_data, i)
 
+        pygame.display.flip()      
+
+def end():
+    screen.fill((90,23,80))
+    running = True
+    while running:
+        screen.blit(winner_image, (490, 300))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            
+        main_menu_button.draw(screen, 250, 500)
+        quit_button.draw(screen, 750, 500)
+
+        if quit_button.isClicked():
+            running=False
+
+        if main_menu_button.isClicked():
+            running=main_menu()
         pygame.display.flip()
 
-
-def gameOver():
-    print("lost")
-    plyr.rect.x = 0
-    plyr.rect.y = 560
-        
-def win():
-    print("win")
-    world_data=worlddata.data_list[level+1]
-    #play(world_data)
 
 main_menu()
